@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="@(JavaScript) javsScript执行顺序（事件轮询机制）最近Vue源码看到$nextTick里面牵扯到 javsScript执行顺序有点晕所以专门整理了一下。 众所周知javaScript是单线程，所以异步操作就经常出现。要想真正弄懂javaScript的执行顺序就需要去真正理解异步任务的执行顺序，而这个过程的关键就是去理解javsScript的事件轮询机制。在学习事件轮询机制之前">
+<meta property="og:type" content="article">
+<meta property="og:title" content="javaScript执行顺序（事件轮询）">
+<meta property="og:url" content="http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/index.html">
+<meta property="og:site_name" content="wzhiyong">
+<meta property="og:description" content="@(JavaScript) javsScript执行顺序（事件轮询机制）最近Vue源码看到$nextTick里面牵扯到 javsScript执行顺序有点晕所以专门整理了一下。 众所周知javaScript是单线程，所以异步操作就经常出现。要想真正弄懂javaScript的执行顺序就需要去真正理解异步任务的执行顺序，而这个过程的关键就是去理解javsScript的事件轮询机制。在学习事件轮询机制之前">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-04-23T13:07:57.242Z">
+<meta property="article:modified_time" content="2020-04-23T12:30:51.218Z">
+<meta property="article:author" content="wzhiyong">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>javaScript执行顺序（事件轮询）</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2020/04/23/pwd%E6%8A%80%E6%9C%AF/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2020/04/23/JavaScript%E5%A4%9A%E7%BA%BF%E7%A8%8B/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/" target="_blank" rel="noopener"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&text=javaScript执行顺序（事件轮询）" target="_blank" rel="noopener"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&title=javaScript执行顺序（事件轮询）" target="_blank" rel="noopener"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&is_video=false&description=javaScript执行顺序（事件轮询）" target="_blank" rel="noopener"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=javaScript执行顺序（事件轮询）&body=Check out this article: http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&title=javaScript执行顺序（事件轮询）" target="_blank" rel="noopener"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&title=javaScript执行顺序（事件轮询）" target="_blank" rel="noopener"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&title=javaScript执行顺序（事件轮询）" target="_blank" rel="noopener"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&title=javaScript执行顺序（事件轮询）" target="_blank" rel="noopener"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&name=javaScript执行顺序（事件轮询）&description=" target="_blank" rel="noopener"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&t=javaScript执行顺序（事件轮询）" target="_blank" rel="noopener"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#javsScript执行顺序（事件轮询机制）"><span class="toc-number">1.</span> <span class="toc-text">javsScript执行顺序（事件轮询机制）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#任务队列"><span class="toc-number">1.1.</span> <span class="toc-text">任务队列</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#macro-task-（宏任务队列）"><span class="toc-number">1.1.1.</span> <span class="toc-text">macro-task （宏任务队列）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#源任务"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">源任务</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#micro-task（微任务队列）"><span class="toc-number">1.1.2.</span> <span class="toc-text">micro-task（微任务队列）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#事件轮询机制"><span class="toc-number">1.2.</span> <span class="toc-text">事件轮询机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#规则"><span class="toc-number">1.2.1.</span> <span class="toc-text">规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#优先级"><span class="toc-number">1.2.2.</span> <span class="toc-text">优先级</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#demo"><span class="toc-number">1.3.</span> <span class="toc-text">demo</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        javaScript执行顺序（事件轮询）
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">wzhiyong</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2020-04-23T13:07:57.242Z" itemprop="datePublished">2020-04-23</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>@(JavaScript)</p>
+<h1 id="javsScript执行顺序（事件轮询机制）"><a href="#javsScript执行顺序（事件轮询机制）" class="headerlink" title="javsScript执行顺序（事件轮询机制）"></a>javsScript执行顺序（事件轮询机制）</h1><p>最近Vue源码看到$nextTick里面牵扯到 javsScript执行顺序有点晕所以专门整理了一下。</p>
+<p>众所周知javaScript是单线程，所以异步操作就经常出现。要想真正弄懂javaScript的执行顺序就需要去真正理解异步任务的执行顺序，而这个过程的关键就是去理解javsScript的事件轮询机制。在学习事件轮询机制之前要先去理解任务队列。</p>
+<h2 id="任务队列"><a href="#任务队列" class="headerlink" title="任务队列"></a>任务队列</h2><p>在异步任务执行完成之后，将之前安排好的任务加入到一个队列中去，之后根据事件轮询的规则去执行这些任务。这个队列就是任务队列。</p>
+<p>例如我们在使用Promise时会使用then方法传入当前面的异步任务完成之后所执行的函数。</p>
+<ul>
+<li>这个Promise就是我们的异步任务。</li>
+<li>then函数的参数就是之前安排好的任务。</li>
+</ul>
+<p>事件轮询就是处理任务队列中任务的执行顺序，而任务队列分为两种macro-task 和 micro-task, 不同的异步任务会加入到不同的任务队列中区。</p>
+<h3 id="macro-task-（宏任务队列）"><a href="#macro-task-（宏任务队列）" class="headerlink" title="macro-task （宏任务队列）"></a>macro-task （宏任务队列）</h3><p>常见的宏任务：javascript(整体代码)、setTimeout、setInterval，setImmediate、I/O、UI渲染<br>这些异步类型会在异步完成之后加入到macro-task任务队列中去。</p>
+<h4 id="源任务"><a href="#源任务" class="headerlink" title="源任务"></a>源任务</h4><p>在macro-task任务队列中还会细分几种不同的源任务队列其中setTimeout、setInterval为同一源任务。我们在将异步任务加入到macro-task队列时会判断当前有没有同源任务如果有则加入到同源任务的队列中，没有则新建一个源任务队列。</p>
+<h3 id="micro-task（微任务队列）"><a href="#micro-task（微任务队列）" class="headerlink" title="micro-task（微任务队列）"></a>micro-task（微任务队列）</h3><p>常见的微任务：promise、MutationObserver、process.nextTick<br>这些异步类型会在异步完成之后加入到micro-task任务队列中去。<br>micro-task中没有源任务队列，只有一个队列。在我执行代码的时候发现process.nextTick永远会比promise先执行，所以我猜测在这其中还是有优先级概念存在的。</p>
+<h2 id="事件轮询机制"><a href="#事件轮询机制" class="headerlink" title="事件轮询机制"></a>事件轮询机制</h2><p>事件轮询就是根据一个规则顺序去执行两个任务队列中的任务。</p>
+<h3 id="规则"><a href="#规则" class="headerlink" title="规则"></a>规则</h3><p>先说这个规则： macro-task执行一个源任务队列 -&gt; micro-task 执行完队列中的所有任务<br>我们在前面说了任务队列的分类，每次轮询会从macro-task中取出一个源任务队列全部执行，然后再全部执行完 micro-task中所有的任务，这就是一个轮询。</p>
+<h3 id="优先级"><a href="#优先级" class="headerlink" title="优先级"></a>优先级</h3><p>两个任务队列中的任务的执行顺序也是有优先级存在的。<br>在我实验中：</p>
+<ul>
+<li>macro-task 队列里javascript(整体代码)优先级最高，setTimeout大概率高于setImmediate，剩下的因为无法控制时间无法做一个准确的比较。</li>
+<li>micro-task process.nextTick高于Promise</li>
+</ul>
+<h2 id="demo"><a href="#demo" class="headerlink" title="demo"></a>demo</h2><p>理论上的概念上面已经说完了，我这里举一个例子可以更好的理解。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">setImmediate(<span class="function"><span class="params">()</span> =&gt;</span> &#123;  <span class="comment">// 加入macro-task</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">1</span>)</span><br><span class="line">&#125;, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;  <span class="comment">// 加入macro-task</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">2</span>)</span><br><span class="line">&#125;, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> timer = setInterval(<span class="function"><span class="params">()</span> =&gt;</span>&#123;  <span class="comment">// 加入macro-task</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">3</span>);</span><br><span class="line">    clearInterval(timer)</span><br><span class="line">&#125;,<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">4</span>); <span class="comment">// 同步任务</span></span><br><span class="line">    resolve()</span><br><span class="line">&#125;).then(<span class="function"><span class="params">()</span> =&gt;</span> &#123; <span class="comment">// 加入micro-task</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">5</span>)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;   <span class="comment">// 加入macro-task</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">6</span>);</span><br><span class="line">    <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="number">7</span>); <span class="comment">// 同步任务</span></span><br><span class="line">        resolve() </span><br><span class="line">    &#125;).then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;  <span class="comment">// 加入micro-task</span></span><br><span class="line">        <span class="built_in">console</span>.log(<span class="number">8</span>)</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">9</span>); <span class="comment">// 同步任务</span></span><br><span class="line">    resolve()</span><br><span class="line">&#125;).then(<span class="function"><span class="params">()</span> =&gt;</span> &#123; <span class="comment">// 加入micro-task</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">10</span>)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">process.nextTick(<span class="function"><span class="params">()</span> =&gt;</span> &#123; <span class="comment">// 加入micro-task</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">11</span>)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>答案：4、9、11、5、10、2、3、6、7、8、1。下面对每个输出做了一个简单的解析</p>
+<p>4：同步任务主线程执行<br>9：同步任务主线程执行<br>11：macro-task中javascript(整体代码)任务执行完成，开始执行micro-task。其中process.nextTick优先级高先输出<br>5：micro-task任务<br>10：micro-task任务，此时当前micro-task任务队列已经全部执行完成一次事件轮询结束。<br>2：开始第二次事件轮询，其中macro-task任务队列中当前有setTimeout和setImmediate两个源任务队列，其中setTimeout大概率先执行与setImmediate，查资料说是观察者的原因还没有仔细研究。所以开始执行setTimeout的源任务队列其中有三个任务，setTimeout、setInterval为同一源任务。源任务里的执行顺序根据加入的先后顺序执行。所以首先输出2<br>3：setTimeout源任务队列任务<br>6：setTimeout源任务队列任务。当前setTimeout源任务队列任务已经完成。在这个setTimeout中新建了一个Promise，所以这里又加入到micro-task中一个任务。<br>7：同步任务主线程执行<br>8：前面setTimeout源任务队列任务直线完成之后macro-task中的一个任务已经执行完成，此时开始执行micro-task中的任务。<br>当前micro-task中一个一个刚刚在6中新建的promise所以输出，第二次轮询结束。<br>1：第三次轮询开始当前macro-task中只有一个setImmediate源任务队列，执行完成之后所有都已经完成结束。  </p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#javsScript执行顺序（事件轮询机制）"><span class="toc-number">1.</span> <span class="toc-text">javsScript执行顺序（事件轮询机制）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#任务队列"><span class="toc-number">1.1.</span> <span class="toc-text">任务队列</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#macro-task-（宏任务队列）"><span class="toc-number">1.1.1.</span> <span class="toc-text">macro-task （宏任务队列）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#源任务"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">源任务</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#micro-task（微任务队列）"><span class="toc-number">1.1.2.</span> <span class="toc-text">micro-task（微任务队列）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#事件轮询机制"><span class="toc-number">1.2.</span> <span class="toc-text">事件轮询机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#规则"><span class="toc-number">1.2.1.</span> <span class="toc-text">规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#优先级"><span class="toc-number">1.2.2.</span> <span class="toc-text">优先级</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#demo"><span class="toc-number">1.3.</span> <span class="toc-text">demo</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/" target="_blank" rel="noopener"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&text=javaScript执行顺序（事件轮询）" target="_blank" rel="noopener"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&title=javaScript执行顺序（事件轮询）" target="_blank" rel="noopener"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&is_video=false&description=javaScript执行顺序（事件轮询）" target="_blank" rel="noopener"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=javaScript执行顺序（事件轮询）&body=Check out this article: http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&title=javaScript执行顺序（事件轮询）" target="_blank" rel="noopener"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&title=javaScript执行顺序（事件轮询）" target="_blank" rel="noopener"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&title=javaScript执行顺序（事件轮询）" target="_blank" rel="noopener"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&title=javaScript执行顺序（事件轮询）" target="_blank" rel="noopener"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&name=javaScript执行顺序（事件轮询）&description=" target="_blank" rel="noopener"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=http://yoursite.com/2020/04/23/javaScript%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F%EF%BC%88%E4%BA%8B%E4%BB%B6%E8%BD%AE%E8%AF%A2%EF%BC%89/&t=javaScript执行顺序（事件轮询）" target="_blank" rel="noopener"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2020
+    wzhiyong
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+  
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="设计模式之代理模式场景代理模式是平时生活中经常遇到的一种模式，比如我们可以经常听到代理律师，经纪人，秘书等一些职位，这些职位本身就是一种代理。我们需要通过代理才能联系到我们真正的目标，代理在中间做了一些过滤，延迟发送等操作。 比如、明想要A公司老板的赞助，小明想要去联系A公司老板，但是小明无法直接联系到需要通过她的秘书小美才能联系到，小明告诉了小美他的商业想法，然后小美让小明回去等消息。  小明">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式之代理模式">
+<meta property="og:url" content="http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="wzhiyong">
+<meta property="og:description" content="设计模式之代理模式场景代理模式是平时生活中经常遇到的一种模式，比如我们可以经常听到代理律师，经纪人，秘书等一些职位，这些职位本身就是一种代理。我们需要通过代理才能联系到我们真正的目标，代理在中间做了一些过滤，延迟发送等操作。 比如、明想要A公司老板的赞助，小明想要去联系A公司老板，但是小明无法直接联系到需要通过她的秘书小美才能联系到，小明告诉了小美他的商业想法，然后小美让小明回去等消息。  小明">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-04-23T13:07:57.285Z">
+<meta property="article:modified_time" content="2020-04-23T12:30:51.224Z">
+<meta property="article:author" content="wzhiyong">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>设计模式之代理模式</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/" target="_blank" rel="noopener"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&text=设计模式之代理模式" target="_blank" rel="noopener"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&title=设计模式之代理模式" target="_blank" rel="noopener"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&is_video=false&description=设计模式之代理模式" target="_blank" rel="noopener"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=设计模式之代理模式&body=Check out this article: http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&title=设计模式之代理模式" target="_blank" rel="noopener"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&title=设计模式之代理模式" target="_blank" rel="noopener"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&title=设计模式之代理模式" target="_blank" rel="noopener"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&title=设计模式之代理模式" target="_blank" rel="noopener"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&name=设计模式之代理模式&description=" target="_blank" rel="noopener"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&t=设计模式之代理模式" target="_blank" rel="noopener"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#设计模式之代理模式"><span class="toc-number">1.</span> <span class="toc-text">设计模式之代理模式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#场景"><span class="toc-number">1.1.</span> <span class="toc-text">场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#保护代理"><span class="toc-number">1.1.1.</span> <span class="toc-text">保护代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#虚拟代理"><span class="toc-number">1.1.2.</span> <span class="toc-text">虚拟代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缓存代理"><span class="toc-number">1.1.3.</span> <span class="toc-text">缓存代理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">1.2.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        设计模式之代理模式
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">wzhiyong</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2020-04-23T13:07:57.285Z" itemprop="datePublished">2020-04-23</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="设计模式之代理模式"><a href="#设计模式之代理模式" class="headerlink" title="设计模式之代理模式"></a>设计模式之代理模式</h1><h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><p>代理模式是平时生活中经常遇到的一种模式，比如我们可以经常听到代理律师，经纪人，秘书等一些职位，这些职位本身就是一种代理。我们需要通过代理才能联系到我们真正的目标，代理在中间做了一些过滤，延迟发送等操作。</p>
+<p>比如、明想要A公司老板的赞助，小明想要去联系A公司老板，但是小明无法直接联系到需要通过她的秘书小美才能联系到，小明告诉了小美他的商业想法，然后小美让小明回去等消息。</p>
+<ul>
+<li>小明 发起者</li>
+<li>小美 代理</li>
+<li>A公司老板 目标</li>
+</ul>
+<p>这个例子里3者的分工很明确，也是一个简单的代理结构，小美的到了小明的想法，这时代理就要起她的作用了，我们先民根据不同的代理模式来规划小美的做法。</p>
+<ul>
+<li>保护代理<br>找A公司老板寻求赞助的人每天很多，他不能可能去一一的了解每个人的想法，所以她交代小美把一些不符合要求的想法过滤掉，这时小美就把一些不靠谱的想法拦截了下来，众多的想法中提取了好的给到了A公司老板</li>
+<li>虚拟代理<br>A公司老板每天日理万机非常忙碌，小美收集到小明等人的想法之后不会立即的传达给老板，而是等待老板空闲的时候再给到他。</li>
+<li>缓存代理<br>小美每天都会收到很多想法，中间难免会有重复的，那些重复的想法她不能每次都在提交给老板，所以我每次都会记录下收到的想法，每次当有重复的想法时就不再记录，如果这个想法老板已经审核过则直接返回结果即可。</li>
+</ul>
+<p>上述的3种代理模式是最常见的也是最常用到的代理模式。</p>
+<h3 id="保护代理"><a href="#保护代理" class="headerlink" title="保护代理"></a>保护代理</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> data = &#123;</span><br><span class="line">    info:<span class="string">'123'</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">proxy</span>(<span class="params">data</span>)</span>&#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params">attr,user</span>)</span>&#123;</span><br><span class="line">            <span class="keyword">if</span>(user.age &lt; <span class="number">30</span>) <span class="keyword">return</span></span><br><span class="line">            <span class="keyword">return</span> data[attr]        </span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> dealProxy = proxy(data)</span><br><span class="line"> </span><br><span class="line">dealProxy(<span class="string">'info'</span>,&#123;<span class="attr">age</span>:<span class="number">35</span>&#125;)</span><br><span class="line">dealProxy(<span class="string">'info'</span>,&#123;<span class="attr">age</span>:<span class="number">28</span>&#125;)</span><br></pre></td></tr></table></figure>
+<p>上述就实现了一个保护代理，js中我们无法知道访问对象是谁，所需要我们收到传入信息，这样其实很不友好,所以在js中保护代理并不常见。</p>
+<h3 id="虚拟代理"><a href="#虚拟代理" class="headerlink" title="虚拟代理"></a>虚拟代理</h3><p>虚拟代理就是在合适时间去做事。我们在网页数据列表加载中就很适合使用虚拟代理，在请求没有返回的时候显示加载动画，等请求返回之后在隐藏动画提升用户体验。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> loadImg = <span class="built_in">document</span>.getElememtById(<span class="string">'loadImg'</span>)</span><br><span class="line"><span class="keyword">let</span> myGet = <span class="function"><span class="keyword">function</span>(<span class="params">interface</span>)</span>&#123;</span><br><span class="line">                <span class="keyword">return</span> ajax(interface)</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> proxyGet = <span class="function"><span class="keyword">function</span>(<span class="params">interface</span>)</span>&#123;</span><br><span class="line">                 loadImg.classList.add(<span class="string">'show'</span>)</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve,reject</span>) =&gt;</span>&#123;</span><br><span class="line">                 myGet.getData(interface).then(<span class="function"><span class="params">data</span> =&gt;</span> &#123;</span><br><span class="line">                          loadImg.classList.remove(<span class="string">'show'</span>)</span><br><span class="line">                          resolve(data)</span><br><span class="line">                    &#125;).catch(<span class="function"><span class="params">e</span> =&gt;</span>&#123;</span><br><span class="line">                          reject(e)</span><br><span class="line">                    &#125;)</span><br><span class="line">                &#125;)   </span><br><span class="line">             &#125;</span><br><span class="line"></span><br><span class="line">loadProxy(<span class="string">'/interface/a'</span>).then(<span class="function"><span class="params">data</span> =&gt;</span>&#123;</span><br><span class="line">    ....</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>上面我们实现了一个myGet的虚拟代理，在请求过程中会出现加载动画。</p>
+<p>这里我们发现其实我们明明可以把两个函数合成在一起，而这里却分开写，添加了一个proxyGet函数。这也是代理的好处，我们加载动画这部分其实是可有可无的，如果未来有一天我不需要加载动画了，或者更改加载动画那么只需要去删除或者更改代理函数即可，我们的原函数修改的可能性降低，并且满足单一功能原则，减少myGet函数的职责，同时我们并没有更改获取请求的行为，但是通过代理函数给他添加了新的行为，而且代理函数和原函数耦合性很低。</p>
+<h3 id="缓存代理"><a href="#缓存代理" class="headerlink" title="缓存代理"></a>缓存代理</h3><p>缓存代理在数字运算，http请求等可能存在重复调用的场景下使用。<br>下面实现一个缓存代理，给一个数返回小于等于它的所有自然数之和。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sumProxy</span>(<span class="params">callback</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">let</span> cache = &#123;&#125;;</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params">count</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(cache[count]) <span class="keyword">return</span> cache[count]</span><br><span class="line">        <span class="keyword">let</span> result = callback(count)</span><br><span class="line">        cache[count] = result</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sum</span>(<span class="params">count</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i = count;i &gt;<span class="number">0</span>;i--)&#123;</span><br><span class="line">        result+=i;</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> sumFn = sumProxy(sum)</span><br><span class="line"></span><br><span class="line">sumFn(<span class="number">39</span>)</span><br><span class="line">sumFn(<span class="number">39</span>)</span><br></pre></td></tr></table></figure>
+<p> 我们上面实现了一个简陋的缓存代理，我么最后调用方法时只有第一次进入了sum函数运算第二次是直接从缓存中读取的，在运算量很大的计算时缓存代理往往能提高很多的效率。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>代理模式：在目标和用户之间架设一层代理，从而优化对目标的访问。</p>
+<p>主要分类：</p>
+<ul>
+<li>保护代理 过滤</li>
+<li>虚拟代理 在合适的时间处理，增加新的功能</li>
+<li>缓存代理 重复的处理缓存节省时间</li>
+</ul>
+<p>代理的分类还有很多上述的主要是常见的代理。</p>
+<p>优点：</p>
+<ul>
+<li>提升访问效率</li>
+<li>过滤不必要的访问</li>
+<li>解藕，把不要的操作放到代理中</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>增加额外的代理函数 </li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#设计模式之代理模式"><span class="toc-number">1.</span> <span class="toc-text">设计模式之代理模式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#场景"><span class="toc-number">1.1.</span> <span class="toc-text">场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#保护代理"><span class="toc-number">1.1.1.</span> <span class="toc-text">保护代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#虚拟代理"><span class="toc-number">1.1.2.</span> <span class="toc-text">虚拟代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#缓存代理"><span class="toc-number">1.1.3.</span> <span class="toc-text">缓存代理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">1.2.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/" target="_blank" rel="noopener"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&text=设计模式之代理模式" target="_blank" rel="noopener"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&title=设计模式之代理模式" target="_blank" rel="noopener"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&is_video=false&description=设计模式之代理模式" target="_blank" rel="noopener"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=设计模式之代理模式&body=Check out this article: http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&title=设计模式之代理模式" target="_blank" rel="noopener"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&title=设计模式之代理模式" target="_blank" rel="noopener"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&title=设计模式之代理模式" target="_blank" rel="noopener"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&title=设计模式之代理模式" target="_blank" rel="noopener"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&name=设计模式之代理模式&description=" target="_blank" rel="noopener"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/&t=设计模式之代理模式" target="_blank" rel="noopener"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2020
+    wzhiyong
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+  
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

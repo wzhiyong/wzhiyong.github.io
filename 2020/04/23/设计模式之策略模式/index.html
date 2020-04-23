@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="设计模式之策略模式场景在我们平时的编码过程中肯定会遇到过要解决同一问题但是有多种解决方式，这时我们可能会写一些if语句来判断使用那种方法，比如我们现在想要告诉自己女朋友晚上带她去吃好吃的，我们可以微信、电话、短信、当面说等等。转换成代码就是 12345678910111213function tell(way,msg)&amp;#123;    if ( way &#x3D;&#x3D;&#x3D;&#39;wechat&#39; ) &amp;#123;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式之策略模式">
+<meta property="og:url" content="http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="wzhiyong">
+<meta property="og:description" content="设计模式之策略模式场景在我们平时的编码过程中肯定会遇到过要解决同一问题但是有多种解决方式，这时我们可能会写一些if语句来判断使用那种方法，比如我们现在想要告诉自己女朋友晚上带她去吃好吃的，我们可以微信、电话、短信、当面说等等。转换成代码就是 12345678910111213function tell(way,msg)&amp;#123;    if ( way &#x3D;&#x3D;&#x3D;&#39;wechat&#39; ) &amp;#123;">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-04-23T13:07:57.275Z">
+<meta property="article:modified_time" content="2020-04-23T12:30:51.225Z">
+<meta property="article:author" content="wzhiyong">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>设计模式之策略模式</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" href="/2020/04/23/Vue%E6%BA%90%E7%A0%81%E6%8E%A2%E7%B4%A2-%E6%95%B0%E6%8D%AE%E9%A9%B1%E5%8A%A8/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/" target="_blank" rel="noopener"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&text=设计模式之策略模式" target="_blank" rel="noopener"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&title=设计模式之策略模式" target="_blank" rel="noopener"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&is_video=false&description=设计模式之策略模式" target="_blank" rel="noopener"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=设计模式之策略模式&body=Check out this article: http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&title=设计模式之策略模式" target="_blank" rel="noopener"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&title=设计模式之策略模式" target="_blank" rel="noopener"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&title=设计模式之策略模式" target="_blank" rel="noopener"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&title=设计模式之策略模式" target="_blank" rel="noopener"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&name=设计模式之策略模式&description=" target="_blank" rel="noopener"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&t=设计模式之策略模式" target="_blank" rel="noopener"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#设计模式之策略模式"><span class="toc-number">1.</span> <span class="toc-text">设计模式之策略模式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#场景"><span class="toc-number">1.1.</span> <span class="toc-text">场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-number">1.1.1.</span> <span class="toc-text">总结</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#组成"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">组成</span></a></li></ol></li></ol></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        设计模式之策略模式
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">wzhiyong</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2020-04-23T13:07:57.275Z" itemprop="datePublished">2020-04-23</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="设计模式之策略模式"><a href="#设计模式之策略模式" class="headerlink" title="设计模式之策略模式"></a>设计模式之策略模式</h1><h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><p>在我们平时的编码过程中肯定会遇到过要解决同一问题但是有多种解决方式，这时我们可能会写一些if语句来判断使用那种方法，比如我们现在想要告诉自己女朋友晚上带她去吃好吃的，我们可以微信、电话、短信、当面说等等。转换成代码就是</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">tell</span>(<span class="params">way,msg</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span> ( way ===<span class="string">'wechat'</span> ) &#123;</span><br><span class="line">       <span class="built_in">console</span>.log(<span class="string">'wechat:'</span>+ msg)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ( way === <span class="string">'phone'</span>)&#123;</span><br><span class="line">       <span class="built_in">console</span>.log(<span class="string">'phone:'</span>+ msg)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ( way === <span class="string">'message'</span>)&#123;</span><br><span class="line">       <span class="built_in">console</span>.log(<span class="string">'message:'</span>+ msg)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ( way === <span class="string">'face'</span> )&#123;</span><br><span class="line">       <span class="built_in">console</span>.log(<span class="string">'face:'</span>+ msg)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">tell(<span class="string">'phone'</span>,<span class="string">'我们晚上去吃好吃的'</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>tell函数包含了许多if-else语句，函数会越来越庞大。</li>
+<li>函数可扩展性差，如果我们新增加一种方式就需要修改tell函数的内部实现。</li>
+<li>复用性差，如果别的地方也需要发送信息的方法则只能粘贴复制。</li>
+</ul>
+<p>我们可以使用策略模式重构上述代码，策略模式本质就是将变化的和不变的分隔，上述代码中我们不变的部分是发送消息的部分，变化是未来可能增加的新策略，所以我们将发送消息的部分和策略分开，我们分别称他们为环境和策略。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 各个策略（策略）</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SendWechat</span></span>&#123;</span><br><span class="line">  send(msg)&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'wechat:'</span>+ msg)</span><br><span class="line">  &#125;</span><br><span class="line">&#125; </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SendPhone</span></span>&#123;</span><br><span class="line">  send(msg)&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'phone:'</span>+ msg)</span><br><span class="line">  &#125;</span><br><span class="line">&#125; </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SendMessage</span></span>&#123;</span><br><span class="line">  send(msg)&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'message:'</span>+ msg)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SendFace</span></span>&#123;</span><br><span class="line">  send(msg)&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'face:'</span>+ msg)</span><br><span class="line">  &#125;</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="comment">// 发送消息（环境）</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Send</span></span>&#123;</span><br><span class="line">  </span><br><span class="line">   setWay(way)&#123;</span><br><span class="line">      <span class="keyword">this</span>.sendWay = way</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">   enter(msg)</span><br><span class="line">      <span class="keyword">if</span>(<span class="keyword">this</span>.sendWay &amp;&amp; <span class="keyword">this</span>.sendWay.send)&#123;</span><br><span class="line">          <span class="keyword">this</span>.sendWay.send(msg)</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用</span></span><br><span class="line"><span class="keyword">let</span> sendEnter = <span class="keyword">new</span> Send()</span><br><span class="line"></span><br><span class="line">sendEnter.setWay(<span class="keyword">new</span> sendWechat())</span><br><span class="line">sendEnter.enter(<span class="string">'今天带你去吃好吃的'</span>)</span><br><span class="line">sendEnter.setWay(<span class="keyword">new</span> sendFace())</span><br><span class="line">sendEnter.enter(<span class="string">'我们今天去吃好吃的'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>上面我们用策略模式重构了代码，我们可看到策略是完全独立出来的，各个策略之前是完全没有联系的，用户通过环境类Send自己选择发送方法，策略与环境是完全解藕的，未来我们只需要去增加减少策略即可完全不需要改变Send函数这符合了最少修改原则。</p>
+<p>我们在js中可以更简便的实现策略模式</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> sendWay = &#123;</span><br><span class="line">    wechat(msg)&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'wechat:'</span>+ msg)</span><br><span class="line">    &#125;,</span><br><span class="line">    phone(msg)&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'phone:'</span>+ msg)</span><br><span class="line">    &#125;,</span><br><span class="line">    message(msg)&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'message:'</span>+ msg)</span><br><span class="line">    &#125;,</span><br><span class="line">    face(msg)&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'face:'</span>+ msg)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">send</span> (<span class="params">way,msg</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> sendWay[way](msg)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">consoe.log(send(<span class="string">'wechat'</span>,<span class="string">'晚上去吃好吃的'</span>))</span><br></pre></td></tr></table></figure>
+<p>上述改过的策略模式看上去更加简单了。<br>策略模式的使用场景还是很多当我们看到很多可以相互可以替换的方法时，很多条件判断时都可以看一下是否可以使用策略模式，例如表单验证就可以合适使用。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>策略模式：定义一系列的算法，把他们一个个封装起来，并使他们可以相互替换。</p>
+<h4 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h4><ul>
+<li>策略<br>策略是一个个可以相互替换的算法。</li>
+<li>环境<br>环境来决定如何使用策略。</li>
+<li>用户<br>决定使用哪一个策略</li>
+</ul>
+<p>用户通过环境来决定使用哪一种策略，策略和环境之间是完全解藕的。</p>
+<p>优点：</p>
+<ul>
+<li>算法与业务节藕</li>
+<li>可扩展性，维护性强</li>
+<li>有效避免多重条件判断，代码清晰</li>
+<li>策略的复用性加强</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>用户需要知道所有的策略，违反知识最少原则。</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#设计模式之策略模式"><span class="toc-number">1.</span> <span class="toc-text">设计模式之策略模式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#场景"><span class="toc-number">1.1.</span> <span class="toc-text">场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-number">1.1.1.</span> <span class="toc-text">总结</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#组成"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">组成</span></a></li></ol></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/" target="_blank" rel="noopener"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&text=设计模式之策略模式" target="_blank" rel="noopener"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&title=设计模式之策略模式" target="_blank" rel="noopener"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&is_video=false&description=设计模式之策略模式" target="_blank" rel="noopener"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=设计模式之策略模式&body=Check out this article: http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&title=设计模式之策略模式" target="_blank" rel="noopener"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&title=设计模式之策略模式" target="_blank" rel="noopener"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&title=设计模式之策略模式" target="_blank" rel="noopener"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&title=设计模式之策略模式" target="_blank" rel="noopener"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&name=设计模式之策略模式&description=" target="_blank" rel="noopener"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=http://yoursite.com/2020/04/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/&t=设计模式之策略模式" target="_blank" rel="noopener"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2020
+    wzhiyong
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+  
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
