@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="@(JavaScript) JavaScript异步什么是异步？异步简单的理解就是一段代码逻辑的执行时间是间断的，并不是连续的。通常都是执行一部分然后过一段时间在执行一部分。 为什么需要异步？因为JavaScript是单线程的，它需要异步这种机制让代码更高效的执行。类似http请求，文件操作这种耗时的操作如果不异步执行那么将十分的卡顿。 如何实现？实现的方式目前主要有四种回调函数、Promise、">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入JavaScript异步">
+<meta property="og:url" content="http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/index.html">
+<meta property="og:site_name" content="wzhiyong">
+<meta property="og:description" content="@(JavaScript) JavaScript异步什么是异步？异步简单的理解就是一段代码逻辑的执行时间是间断的，并不是连续的。通常都是执行一部分然后过一段时间在执行一部分。 为什么需要异步？因为JavaScript是单线程的，它需要异步这种机制让代码更高效的执行。类似http请求，文件操作这种耗时的操作如果不异步执行那么将十分的卡顿。 如何实现？实现的方式目前主要有四种回调函数、Promise、">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://testfund.10jqka.com.cn/ifundapp_app/public/wzy/testimg/dist/generator.png">
+<meta property="og:image" content="https://testfund.10jqka.com.cn/ifundapp_app/public/wzy/testimg/dist/promise.png">
+<meta property="og:image" content="https://testfund.10jqka.com.cn/ifundapp_app/public/wzy/testimg/dist/async.png">
+<meta property="article:published_time" content="2020-04-23T12:41:14.352Z">
+<meta property="article:modified_time" content="2020-04-23T12:30:51.221Z">
+<meta property="article:author" content="wzhiyong">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://testfund.10jqka.com.cn/ifundapp_app/public/wzy/testimg/dist/generator.png">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+          
+        
+    
+    <!-- title -->
+    <title>深入JavaScript异步</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+      
+<link rel="stylesheet" href="/css/rtl.css">
+
+    
+    <!-- rss -->
+    
+    
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2020/04/23/Decorators/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/" target="_blank" rel="noopener"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&text=深入JavaScript异步" target="_blank" rel="noopener"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&title=深入JavaScript异步" target="_blank" rel="noopener"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&is_video=false&description=深入JavaScript异步" target="_blank" rel="noopener"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=深入JavaScript异步&body=Check out this article: http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&title=深入JavaScript异步" target="_blank" rel="noopener"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&title=深入JavaScript异步" target="_blank" rel="noopener"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&title=深入JavaScript异步" target="_blank" rel="noopener"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&title=深入JavaScript异步" target="_blank" rel="noopener"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&name=深入JavaScript异步&description=" target="_blank" rel="noopener"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&t=深入JavaScript异步" target="_blank" rel="noopener"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JavaScript异步"><span class="toc-number">1.</span> <span class="toc-text">JavaScript异步</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是异步？"><span class="toc-number">1.1.</span> <span class="toc-text">什么是异步？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么需要异步？"><span class="toc-number">1.2.</span> <span class="toc-text">为什么需要异步？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何实现？"><span class="toc-number">1.3.</span> <span class="toc-text">如何实现？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#回调函数"><span class="toc-number">1.3.1.</span> <span class="toc-text">回调函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Promise"><span class="toc-number">1.3.2.</span> <span class="toc-text">Promise</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#使用"><span class="toc-number">1.3.2.1.</span> <span class="toc-text">使用</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#链式使用"><span class="toc-number">1.3.2.1.1.</span> <span class="toc-text">链式使用</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Promise-all"><span class="toc-number">1.3.2.1.2.</span> <span class="toc-text">Promise.all</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#异常处理"><span class="toc-number">1.3.2.2.</span> <span class="toc-text">异常处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-number">1.3.2.3.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Generator异步"><span class="toc-number">1.3.3.</span> <span class="toc-text">Generator异步</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Generator函数"><span class="toc-number">1.3.3.1.</span> <span class="toc-text">Generator函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#异步使用"><span class="toc-number">1.3.3.2.</span> <span class="toc-text">异步使用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#async-await"><span class="toc-number">1.3.4.</span> <span class="toc-text">async&#x2F;await</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#异常处理-1"><span class="toc-number">1.3.4.1.</span> <span class="toc-text">异常处理</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#兼容性"><span class="toc-number">1.4.</span> <span class="toc-text">兼容性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#promise"><span class="toc-number">1.4.1.</span> <span class="toc-text">promise</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#generator"><span class="toc-number">1.4.2.</span> <span class="toc-text">generator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#async-await-1"><span class="toc-number">1.4.3.</span> <span class="toc-text">async&#x2F;await</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结-1"><span class="toc-number">1.5.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        深入JavaScript异步
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">wzhiyong</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2020-04-23T12:41:14.352Z" itemprop="datePublished">2020-04-23</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>@(JavaScript)</p>
+<h1 id="JavaScript异步"><a href="#JavaScript异步" class="headerlink" title="JavaScript异步"></a>JavaScript异步</h1><h2 id="什么是异步？"><a href="#什么是异步？" class="headerlink" title="什么是异步？"></a>什么是异步？</h2><p>异步简单的理解就是一段代码逻辑的执行时间是间断的，并不是连续的。通常都是执行一部分然后过一段时间在执行一部分。</p>
+<h2 id="为什么需要异步？"><a href="#为什么需要异步？" class="headerlink" title="为什么需要异步？"></a>为什么需要异步？</h2><p>因为JavaScript是单线程的，它需要异步这种机制让代码更高效的执行。类似http请求，文件操作这种耗时的操作如果不异步执行那么将十分的卡顿。</p>
+<h2 id="如何实现？"><a href="#如何实现？" class="headerlink" title="如何实现？"></a>如何实现？</h2><p>实现的方式目前主要有四种回调函数、Promise、Generator、async/await 。其中回调函数是最早的实现方式，在ES6中加入了Promise和Generator两个异步解决方案，ES7中加入了async/await，使用哪一种个人认为是取决于异步操作的复杂程度，如果都是只有一层的异步操作每一个都可取，不过回调函数更简单的使用方式可能更方便和简洁。如果需要多层嵌套的使用后几者，但是往往业务开发过程中几层的异步嵌套都是无法预测到的，所以还是不推荐使用回调函数。后面几者因为是新加入的特性兼容性是主要问题，目前运行在游览器上的代码主要使用的解决方案是Promise,在写node时使用async/await更好。</p>
+<h3 id="回调函数"><a href="#回调函数" class="headerlink" title="回调函数"></a>回调函数</h3><p>回调函数是十分简单方便的一种异步执行方式，就是把将来要执行的函数放在异步完成时能访问到的上下文中并调用。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">callback</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log()</span><br><span class="line">&#125;</span><br><span class="line">post(<span class="string">'interface/a'</span>,callback)</span><br></pre></td></tr></table></figure>
+<p>这里callback就是回调函数，将自己当作参数传入，让异步执行完成之后可以访问到并执行。<br>我们可以看出来只有一层回调的时候，回调函数其实非常方便简单只用了JavaScript最简单的原理没有借助其他API。但是当嵌套十分复杂的时候就会出现很多问题。如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">post(<span class="string">'interface/a'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	post(<span class="string">'interface/b'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		post(<span class="string">'interface/c'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">			....</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这种嵌套十分复杂的回掉函数非常难以维护，首先我这里只是写了调用如果再加上其中的逻辑代码这段代码就会变得十分‘庞大’，而且这种一层一层的嵌套让其上下文环境互相交融，耦合性十分强，当我们要改其中的某一层时需要考虑上几层和下几层这不是我们想要的。所以回调函数在只有一层的时候使用最佳，其他情况下不推荐使用。如果项目中有使用Promise等最好统一一种方式，因为其他方式的一层调用也很简单，而且像http方法最好统一入口，全局定义共用方法，这样在处理异常情况时更加安全和方便。</p>
+<h3 id="Promise"><a href="#Promise" class="headerlink" title="Promise"></a>Promise</h3><p>Promise是对异步执行的一种解方案，引入了Promise对象。</p>
+<h4 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h4><p>Promise的原理十分简单，就是状态的改变，并在变成不同状态的时候执行不同的函数。有两种状态改变路径pending-&gt;fulfilled<br>和pending-&gt;rejected。一个Promise对象只能改变一次状态。改变状态的方式也很简单就是执行resolve和reject函数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> promise = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve,reject</span>) =&gt;</span> &#123;</span><br><span class="line">	http.post(<span class="string">'interface/a'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		resolve(<span class="string">'success'</span>) <span class="comment">// pending-&gt;fulfilled</span></span><br><span class="line">	&#125;,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		reject(<span class="string">'fail'</span>) <span class="comment">// pending-&gt;rejected。</span></span><br><span class="line">	&#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这其中的resolve和reject 是内置的参数。<br>当状态改变之后就通过Promise.protoype.then或Promise.protoype.catch方法来执行对应状态的函数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">promise.then(<span class="function">(<span class="params">data</span>)=&gt;</span>&#123;</span><br><span class="line">	<span class="comment">// pending-&gt;fulfilled执行</span></span><br><span class="line">&#125;).catch(<span class="function"><span class="params">error</span> =&gt;</span>&#123;</span><br><span class="line">	<span class="comment">// pending-&gt;rejected执行</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>Promise的基础使用十分简单，这种链式处理模式也十分符合我们处理代码的逻辑思路，当处理同时需要多个异步操作时更能体现出他的有用之处。</p>
+<h5 id="链式使用"><a href="#链式使用" class="headerlink" title="链式使用"></a>链式使用</h5><p>我们经常会遇到几个异步任务连续依赖的情况，如果使用回调函数就会出现回调地狱的问题，用Promise就十分清楚明白。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 回调函数</span></span><br><span class="line">post(<span class="string">'interface/a'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	post(<span class="string">'interface/b'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		post(<span class="string">'interface/c'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">			....</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;)</span><br><span class="line">	<span class="comment">// Promise</span></span><br><span class="line">post(<span class="string">'interface/a'</span>).then(<span class="function"><span class="params">data</span> =&gt;</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> post(<span class="string">'interface/b'</span>)</span><br><span class="line">&#125;).then(<span class="function"><span class="params">data</span> =&gt;</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> Post(<span class="string">'interface/c'</span></span><br><span class="line">&#125;).then(<span class="function"><span class="params">data</span> =&gt;</span> &#123;</span><br><span class="line">	....</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>对比之下我们可以明显的感觉到Promise更加的简洁明了，相比回调函数的嵌套最主要解决了以下两个问题：</p>
+<ol>
+<li>上下文互相独立，通过参数交互，解耦合。</li>
+<li>书写清楚明白，链式结构。<h5 id="Promise-all"><a href="#Promise-all" class="headerlink" title="Promise.all"></a>Promise.all</h5>在处理某个操作需要多个异步操作全部完成时在执行，Promise也有绝佳的解决方式。<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Promise</span>.all([promise1,promise2,promise3]).then(<span class="function"><span class="params">data</span> =&gt;</span> &#123;&#125;).catch(<span class="function"><span class="params">e</span> =&gt;</span> &#123;&#125;)</span><br></pre></td></tr></table></figure>
+只有当所有的Promise全部变为fulfilled状态时就会执行then中的函数，当其中一个变为rejected状态就会执行catch函数，很好的解决了上述的情况。</li>
+</ol>
+<p>再使用Promise.all时有下面几个注意点</p>
+<ol>
+<li>Promise.all中的实例如果自己定义了then外部将获取then的返回值，如果没有返回值则是undefined。</li>
+<li>Promise.all中的实例如果自己定义了catch 外部将不会捕获他的错误，出现错误时Promise.all的状态也不会变为rejected，Promise.all的then中对应的值是catch的返回值。</li>
+<li>Promise.all中实例自己定义的then和catch如果出现错误，那外部将捕获他们<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> Pro1 = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve</span>) =&gt;</span> &#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        resolve(<span class="string">'Pro1'</span>)</span><br><span class="line">    &#125;, <span class="number">1000</span>);</span><br><span class="line">&#125;).then(<span class="function"><span class="params">data</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(data) <span class="comment">// 'Pro1'</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">let</span> Pro2 = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve</span>) =&gt;</span> &#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        resolve(<span class="string">'Pro2'</span>)</span><br><span class="line">    &#125;, <span class="number">2000</span>);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">let</span> Pro3 = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        reject(<span class="string">'Pro3 Error'</span>)</span><br><span class="line">    &#125;, <span class="number">3000</span>);</span><br><span class="line">&#125;).catch(<span class="function"><span class="params">e</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(e); <span class="comment">// Pro3 Error</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">`<span class="subst">$&#123;e&#125;</span> catch`</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="built_in">Promise</span>.all([Pro1, Pro2, Pro3]).then(<span class="function"><span class="params">data</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(data) <span class="comment">// [ undefined, 'Pro2', 'Pro3 Error catch' ]</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h4>Promise的的异常处理也有些区别。在Promise中如果出现了错误，js并不会终止执行。<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">()</span> =&gt;</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(x) <span class="comment">// UnhandledPromiseRejectionWarning: ReferenceError: x is not defined</span></span><br><span class="line">&#125;);</span><br><span class="line">setTimeout(<span class="function"><span class="params">()</span>=&gt;</span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="number">3</span>) <span class="comment">// 3</span></span><br><span class="line">&#125;,<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+这里我们在Promise中输出一个不存在值x应该通畅会报错并终止js的执行但在Promise中会打印出错误但是代码会继续执行。如果我们有写catch,错误会被catch所捕获<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">()</span> =&gt;</span>&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="string">'err'</span></span><br><span class="line">&#125;).catch(<span class="function"><span class="params">e</span> =&gt;</span> &#123;</span><br><span class="line">	<span class="built_in">console</span>.log(e) <span class="comment">// 'err'</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+这里catch回捕获到错误，所以我们平时在使用Promise时最好要写上catch函数。<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4>Promise核心就是状态的改变，并执行不同的回调函数。与回调函数相比是增加了一个全新的API，在处理多异步任务的时候十分有用，在代码的书写上（链式）也比回调函数（跳跃式）清楚明白，但是独特的错误处理方式和一些API需要充分理解才能使用好。<h3 id="Generator异步"><a href="#Generator异步" class="headerlink" title="Generator异步"></a>Generator异步</h3><h4 id="Generator函数"><a href="#Generator函数" class="headerlink" title="Generator函数"></a>Generator函数</h4>generator是ES6中新加入的一种特殊函数，与一般函数完全不同，提供了一种新的异步解决方案。简单来说，generator函数执行之后返回的是一个状态机，通过yield定义状态，通过next方法依次遍历状态机。在执行一次next之后如果不继续执行可以理解为这个函数暂停并封存了上下文环境，移交了控制权，等下次执行时在解封上下文获得控制权，是不是感觉和异步很像，发送一个请求等待，过一段时间在执行回调。<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span>* <span class="title">generator</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">yield</span> <span class="string">'ijijin'</span>;</span><br><span class="line">  <span class="keyword">yield</span> <span class="string">'hello'</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> a = generator() <span class="comment">// 执行返回了一个状态机</span></span><br><span class="line">a.next() <span class="comment">// &#123; value: 'ijijin', done: false &#125; </span></span><br><span class="line">a.next() <span class="comment">// &#123; value: 'hello', done: false &#125;</span></span><br><span class="line">a.next() <span class="comment">// &#123; value: 'undefined', done: true &#125;</span></span><br></pre></td></tr></table></figure>
+具体的generator语法可以去ECMAScript 6 入门上学习,这里只探讨他的异步部分：<a href="https://es6.ruanyifeng.com/#docs/generator" target="_blank" rel="noopener">https://es6.ruanyifeng.com/#docs/generator</a><h4 id="异步使用"><a href="#异步使用" class="headerlink" title="异步使用"></a>异步使用</h4>generator函数可以暂停执行并且不阻塞这满足异步最大的要求。<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span>* <span class="title">generator</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">yield</span> post(<span class="string">'....'</span>);</span><br><span class="line">  <span class="keyword">yield</span> post(<span class="string">'....'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+上面有两个post请求我们如果每次执行完成之后再继续执行下一个，在执行的同时也不会阻塞其他代码的执行，并且这种写法看上去也很像同步的样子，是不是感觉很完美。现在只需要一个能让这个代码自动执行的方法就是每次异步完成之后自动执行下一个next()的方法。这里要与Promise结合，我这里写出一个实现方法，能实现的方法不止一种。<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// fn 是一个generator函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">generator</span>(<span class="params">fn</span>)</span>&#123;</span><br><span class="line">	<span class="keyword">let</span> a = fn()<span class="comment">// 生成状态机</span></span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">run</span>(<span class="params">data</span>)</span>&#123;</span><br><span class="line">		<span class="keyword">if</span>(data.done) <span class="keyword">return</span></span><br><span class="line">		data.value.then(<span class="function"><span class="params">data</span> =&gt;</span> &#123;</span><br><span class="line">			run(a.next(data))</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;</span><br><span class="line">	run(a.next())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span>* <span class="title">async</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">let</span> a = post(<span class="string">'.....'</span>) <span class="comment">// 请求A 返回一个promise</span></span><br><span class="line">	<span class="comment">// 处理请求A的结果a</span></span><br><span class="line">	<span class="keyword">let</span> b = post(<span class="string">'.....'</span>) <span class="comment">// 请求B 返回一个promise</span></span><br><span class="line">	<span class="comment">// 处理请求B的结果b</span></span><br><span class="line">	。。。。。</span><br><span class="line">&#125;</span><br><span class="line">generator(<span class="keyword">async</span>)<span class="comment">// 这里 请求A和请求B就会顺序执行。</span></span><br></pre></td></tr></table></figure>
+这样写异步就不许要考虑太多的作用域，解耦等问题而且编码符合正常的同步逻辑，不会出现回调函数的回调地狱或者promise好多的.then.catch，对于后续的维护和其他的的阅读都十分友好，比较好的generator封装库是co函数库，他就是写了一个让generator自动执行的执行器。<h3 id="async-await"><a href="#async-await" class="headerlink" title="async/await"></a>async/await</h3>async/await是ES7中加入的新特性，也是可以更好处理异步，很多人都说async/await是异步的终极解决方法。<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">test</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">let</span> a = <span class="keyword">await</span> post(<span class="string">'...'</span>) <span class="comment">// 这里要返回一个promise对象，不然也会转化成一个promise对象;</span></span><br><span class="line">	.....</span><br><span class="line">	<span class="keyword">let</span> b = <span class="keyword">await</span> post(<span class="string">'...'</span>) </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+是不是感觉和generator很像，特殊的函数标识（*/async），和特殊的运算符（yiled/await），不过对于异步函数明显后者两个名字明显让人更好的理解这是一个异步的操作。await会等待post返回的promise对象状态变为fulfilled或者reject然后才继续往下执行。async/await和上面的generator封装的使用promise自动执行的效果和原理都极为相似，他就是将generator的自动执行器封装了起来，做了更好的优化。<h4 id="异常处理-1"><a href="#异常处理-1" class="headerlink" title="异常处理"></a>异常处理</h4>使用async/await时推荐使用try…catch处理异常，因为这样更好的理解和优美，当然也可以通过.catch来捕获错误，但是我们使用aync/await让代码已经看上不很不像‘异步’了，如果用上.catch就不那么完美了。<h2 id="兼容性"><a href="#兼容性" class="headerlink" title="兼容性"></a>兼容性</h2>当我们使用新的API时肯定要考虑API的兼容性,下面整理了一下各个API的兼容性<h3 id="promise"><a href="#promise" class="headerlink" title="promise"></a>promise</h3><img src="https://testfund.10jqka.com.cn/ifundapp_app/public/wzy/testimg/dist/generator.png" alt="enter image description here"></li>
+</ol>
+<h3 id="generator"><a href="#generator" class="headerlink" title="generator"></a>generator</h3><p><img src="https://testfund.10jqka.com.cn/ifundapp_app/public/wzy/testimg/dist/promise.png" alt="enter image description here"></p>
+<h3 id="async-await-1"><a href="#async-await-1" class="headerlink" title="async/await"></a>async/await</h3><p><img src="https://testfund.10jqka.com.cn/ifundapp_app/public/wzy/testimg/dist/async.png" alt="enter image description here"><br>最新的一般游览器都已经兼容了这些属性，如果要兼容低版本可是使用babel编译，但是由于promsie是原生的API所以只能引用ployfill或者重新Promise，async/await和generator是可以经过babel编译兼容低版本，但是async/await是依赖Promise的所以使用时还需要考虑Promise的兼容性。</p>
+<h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h2><p>上面的几种方式其实都能解决我们的需求，但是从健壮性、可维护性、可读性方面async/await最优，但是由于受游览器环境的兼容限制可以在游览器环境中使用Promise来解决，在node环境中要尽量去拥抱最新的最好的解决方案，回调函数虽然有他的可取之处，但是从长远角度来看，不推荐使用。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JavaScript异步"><span class="toc-number">1.</span> <span class="toc-text">JavaScript异步</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是异步？"><span class="toc-number">1.1.</span> <span class="toc-text">什么是异步？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么需要异步？"><span class="toc-number">1.2.</span> <span class="toc-text">为什么需要异步？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#如何实现？"><span class="toc-number">1.3.</span> <span class="toc-text">如何实现？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#回调函数"><span class="toc-number">1.3.1.</span> <span class="toc-text">回调函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Promise"><span class="toc-number">1.3.2.</span> <span class="toc-text">Promise</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#使用"><span class="toc-number">1.3.2.1.</span> <span class="toc-text">使用</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#链式使用"><span class="toc-number">1.3.2.1.1.</span> <span class="toc-text">链式使用</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Promise-all"><span class="toc-number">1.3.2.1.2.</span> <span class="toc-text">Promise.all</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#异常处理"><span class="toc-number">1.3.2.2.</span> <span class="toc-text">异常处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#总结"><span class="toc-number">1.3.2.3.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Generator异步"><span class="toc-number">1.3.3.</span> <span class="toc-text">Generator异步</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Generator函数"><span class="toc-number">1.3.3.1.</span> <span class="toc-text">Generator函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#异步使用"><span class="toc-number">1.3.3.2.</span> <span class="toc-text">异步使用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#async-await"><span class="toc-number">1.3.4.</span> <span class="toc-text">async&#x2F;await</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#异常处理-1"><span class="toc-number">1.3.4.1.</span> <span class="toc-text">异常处理</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#兼容性"><span class="toc-number">1.4.</span> <span class="toc-text">兼容性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#promise"><span class="toc-number">1.4.1.</span> <span class="toc-text">promise</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#generator"><span class="toc-number">1.4.2.</span> <span class="toc-text">generator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#async-await-1"><span class="toc-number">1.4.3.</span> <span class="toc-text">async&#x2F;await</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结-1"><span class="toc-number">1.5.</span> <span class="toc-text">总结</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/" target="_blank" rel="noopener"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&text=深入JavaScript异步" target="_blank" rel="noopener"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&title=深入JavaScript异步" target="_blank" rel="noopener"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&is_video=false&description=深入JavaScript异步" target="_blank" rel="noopener"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=深入JavaScript异步&body=Check out this article: http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&title=深入JavaScript异步" target="_blank" rel="noopener"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&title=深入JavaScript异步" target="_blank" rel="noopener"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&title=深入JavaScript异步" target="_blank" rel="noopener"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&title=深入JavaScript异步" target="_blank" rel="noopener"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&name=深入JavaScript异步&description=" target="_blank" rel="noopener"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://news.ycombinator.com/submitlink?u=http://yoursite.com/2020/04/23/%E6%B7%B1%E5%85%A5JavaScript%E5%BC%82%E6%AD%A5/&t=深入JavaScript异步" target="_blank" rel="noopener"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2020
+    wzhiyong
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+
+<link rel="stylesheet" href="/lib/justified-gallery/css/justifiedGallery.min.css">
+
+
+    <!-- jquery -->
+
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+<script src="/lib/justified-gallery/js/jquery.justifiedGallery.min.js"></script>
+
+<!-- clipboard -->
+
+  
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
